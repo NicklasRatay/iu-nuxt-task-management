@@ -28,7 +28,7 @@ SELECT col_is_fk('public', 'task', 'task_priority_id', 'task_priority_id column 
 SELECT fk_ok('public', 'task', 'task_priority_id', 'public', 'task_priority', 'id', 'task_priority_id column is fk to public.task_priority.id');
 
 SELECT has_column('public', 'task', 'assigned_user_id', 'assigned_user_id column exists');
-SELECT col_type_is('public', 'task', 'assigned_user_id', 'bigint', 'assigned_user_id column is of type bigint');
+SELECT col_type_is('public', 'task', 'assigned_user_id', 'uuid', 'assigned_user_id column is of type uuid');
 SELECT col_not_null('public', 'task', 'assigned_user_id', 'assigned_user_id column is not null');
 SELECT col_is_fk('public', 'task', 'assigned_user_id', 'assigned_user_id column is fk');
 SELECT fk_ok('public', 'task', 'assigned_user_id', 'public', 'user', 'id', 'assigned_user_id column is fk to public.user.id');

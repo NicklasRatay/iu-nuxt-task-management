@@ -1,11 +1,11 @@
 BEGIN;
 
-SELECT plan(34);
+SELECT plan(35);
 
 SELECT has_table('public', 'profile', 'User table exists');
 
 SELECT has_column('public', 'profile', 'user_id', 'user_id column exists');
-SELECT col_type_is('public', 'profile', 'user_id', 'bigint', 'user_id column is of type bigint');
+SELECT col_type_is('public', 'profile', 'user_id', 'uuid', 'user_id column is of type uuid');
 SELECT col_not_null('public', 'profile', 'user_id', 'user_id column is not null');
 SELECT col_is_pk('public', 'profile', 'user_id', 'user_id column is pk');
 SELECT col_is_fk('public', 'profile', 'user_id', 'user_id column is fk');
