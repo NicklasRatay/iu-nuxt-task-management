@@ -33,16 +33,5 @@ const emits = defineEmits<{
     itemClicked: [string];
 }>();
 
-const navigationEntries = ref([
-    {
-        label: "Dashboard",
-        icon: "pi pi-home",
-        route: "/",
-    },
-    {
-        label: "Users",
-        icon: "pi pi-users",
-        route: "/user",
-    },
-]);
+const { navigationEntries } = useNavigationEntries();
 </script>
