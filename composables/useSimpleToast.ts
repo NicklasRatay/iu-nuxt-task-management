@@ -35,6 +35,14 @@ export const useSimpleToast = () => {
         console.error(message);
     };
 
+    const saveSuccess = () => {
+        toast.add({
+            severity: "success",
+            summary: "Data Saved",
+            life: 2500,
+        });
+    };
+
     const validationWarn = () => {
         toast.add({
             severity: "warn",
@@ -44,5 +52,5 @@ export const useSimpleToast = () => {
         });
     };
 
-    return { info, success, warn, error, validationWarn };
+    return { info, success, warn, error, saveSuccess, validationWarn };
 };

@@ -1,6 +1,9 @@
 <template>
     <div>
         <Toast />
+        <DynamicDialog />
+        <UserProfileDialog ref="UserProfileDialogRef" />
+        <UserPasswordDialog ref="UserPasswordDialogRef" />
         <div
             class="fixed z-[999] h-[3.5rem] w-full flex justify-between items-center bg-primary p-2"
         >
@@ -16,6 +19,31 @@
                     {{ APP_NAME }}
                 </NuxtLink>
             </div>
+            <Button
+                icon="pi pi-ellipsis-v"
+                aria-haspopup="true"
+                aria-controls="profile-menu"
+                @click="toggleProfileMenu"
+            />
+            <Menu
+                id="profile-menu"
+                ref="profileMenu"
+                :model="profileMenuItems"
+                :popup="true"
+                class="px-1 py-0"
+            >
+                <template #item="{ item }">
+                    <div
+                        class="flex px-[0.625rem] py-1 gap-5 items-baseline cursor-pointer m-1"
+                    >
+                        <i
+                            :class="item.icon"
+                            style="font-size: 1.2rem"
+                        />
+                        <div class="text-xl">{{ item.label }}</div>
+                    </div>
+                </template>
+            </Menu>
         </div>
         <div
             v-if="!isMobile"
@@ -54,6 +82,12 @@
 <script setup lang="ts">
 import { APP_NAME } from "~/utils/constants";
 
+const UserProfileDialogRef = ref();
+const UserPasswordDialogRef = ref();
+
+const supabase = useSupabaseClient();
+const simpleToast = useSimpleToast();
+
 const isSidebarVisible = ref(false);
 
 const { width } = useWindowSize();
@@ -64,4 +98,35 @@ onMounted(() => {
         isSidebarVisible.value = true;
     }
 });
+
+const profileMenu = ref();
+const toggleProfileMenu = (event: MouseEvent) => {
+    profileMenu.value.toggle(event);
+};
+const profileMenuItems = computed(() => [
+    {
+        label: "Namen Ändern",
+        icon: "pi pi-user",
+        command: () => UserProfileDialogRef.value?.openDialog(),
+    },
+    {
+        label: "Passwort Ändern",
+        icon: "pi pi-key",
+        command: () => UserPasswordDialogRef.value?.openDialog(),
+    },
+    {
+        label: "Abmelden",
+        icon: "pi pi-sign-out",
+        command: () => handleLogout(),
+    },
+]);
+
+const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        simpleToast.error(error.message);
+        return;
+    }
+    navigateTo("/login");
+};
 </script>
