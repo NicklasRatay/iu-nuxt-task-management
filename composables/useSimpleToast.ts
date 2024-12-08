@@ -35,5 +35,14 @@ export const useSimpleToast = () => {
         console.error(message);
     };
 
-    return { info, success, warn, error };
+    const validationWarn = () => {
+        toast.add({
+            severity: "warn",
+            summary: "Invalid Input",
+            detail: "Please review the input fields.",
+            life: 5000,
+        });
+    };
+
+    return { info, success, warn, error, validationWarn };
 };
