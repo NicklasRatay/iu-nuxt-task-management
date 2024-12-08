@@ -1,0 +1,7 @@
+.output
+.nuxt
+node_modules
+.env
+.env.*
+components.d.ts
+.snaplet/dataModel.json
