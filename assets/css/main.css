@@ -24,6 +24,27 @@ body {
     @apply text-primary;
 }
 
+/* Make table loading overlay transparent (opacity is set in datatable for smooth transition) */
+.p-datatable-mask {
+    @apply rounded-lg opacity-0 transition-opacity duration-1000;
+}
+
+/* Increase height of select list container so more items fit without the need for a scrollbar */
+.p-select-list-container {
+    @apply !max-h-80;
+}
+
+/* Heights */
+.c-h-full {
+    height: calc(100vh - 6.5rem);
+}
+.c-min-h-full {
+    min-height: calc(100vh - 6.5rem);
+}
+.c-max-h-full {
+    max-height: calc(100vh - 6.5rem);
+}
+
 /* Colors */
 .c-bg-region {
     @apply bg-surface-0 dark:bg-surface-900;

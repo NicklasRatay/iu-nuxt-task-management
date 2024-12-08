@@ -1,4 +1,4 @@
-import { it, expect, describe, beforeEach, afterEach, vi } from "vitest";
+import { it, expect, describe, beforeEach, afterEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import type { VueWrapper } from "@vue/test-utils";
 import NavigationMenu from "./NavigationMenu.vue";

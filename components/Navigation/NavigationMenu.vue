@@ -39,5 +39,10 @@ const navigationEntries = ref([
         icon: "pi pi-home",
         route: "/",
     },
+    {
+        label: "Users",
+        icon: "pi pi-users",
+        route: "/user",
+    },
 ]);
 </script>
