@@ -1,4 +1,5 @@
 import { createSeedClient } from "@snaplet/seed";
+import { copycat } from "@snaplet/copycat";
 import { APP_NAME } from "./utils/constants";
 
 const main = async () => {
@@ -11,7 +12,7 @@ const main = async () => {
     let userCounter = 1;
 
     // Test users to login with and to reference from other tables
-    await seed.users((x) =>
+    const users = await seed.users((x) =>
         x(25, {
             instance_id: "00000000-0000-0000-0000-000000000000",
             aud: "authenticated",
@@ -89,6 +90,89 @@ const main = async () => {
             EMAIL_CHANGE_TOKEN_CURRENT = '',
             REAUTHENTICATION_TOKEN = '';`,
     );
+
+    for (let i = 0; i < users.users.length; i++) {
+        const user = users.users[i];
+
+        const firstName = copycat.firstName(user.id);
+        const lastName = copycat.lastName(user.id);
+
+        seed.$store.profile.push({
+            user_id: user.id,
+            email: user.email || "",
+            first_name: firstName,
+            last_name: lastName,
+            is_active: true,
+            created_at: currentTime,
+            created_by: user.id,
+            updated_at: currentTime,
+            updated_by: user.id,
+        });
+
+        console.log(
+            `UPDATE public.profile
+            SET
+                first_name = '${firstName.replace(/'/g, "''")}',
+                last_name = '${lastName.replace(/'/g, "''")}'
+            WHERE
+                user_id = '${user.id}';`,
+        );
+
+        // Assign all roles if first user
+        if (i === 0) {
+            console.log(
+                `INSERT INTO public.user_role (
+                    user_id,
+                    role_id
+                ) VALUES (
+                    '${user.id}',
+                    1
+                );`,
+            );
+            console.log(
+                `INSERT INTO public.user_role (
+                    user_id,
+                    role_id
+                ) VALUES (
+                    '${user.id}',
+                    2
+                );`,
+            );
+            console.log(
+                `INSERT INTO public.user_role (
+                    user_id,
+                    role_id
+                ) VALUES (
+                    '${user.id}',
+                    3
+                );`,
+            );
+            continue;
+        }
+
+        // Deactivate some users
+        if ([4, 7, 20].includes(i)) {
+            console.log(
+                `UPDATE public.profile
+                    SET
+                        is_active = FALSE
+                    WHERE
+                        user_id = '${user.id}';`,
+            );
+        }
+
+        // Assign a single role to user
+        const roleId = copycat.int(user.id, { min: 1, max: 3 });
+        console.log(
+            `INSERT INTO public.user_role (
+                user_id,
+                role_id
+            ) VALUES (
+                '${user.id}',
+                ${roleId}
+            );`,
+        );
+    }
 
     process.exit();
 };
