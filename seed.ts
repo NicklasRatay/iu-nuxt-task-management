@@ -174,6 +174,88 @@ const main = async () => {
         );
     }
 
+    await seed.project((x) =>
+        x(50, {
+            name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
+        }),
+    );
+
+    // Put task priorities in seed store as they already are in the database
+    seed.$store.task_priority.push(
+        {
+            id: 1,
+            name: "Low",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 2,
+            name: "Medium",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 3,
+            name: "High",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 4,
+            name: "Critical",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+    );
+
+    // Put task statuses in seed store as they already are in the database
+    seed.$store.task_status.push(
+        {
+            id: 1,
+            name: "To Do",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 2,
+            name: "In Progress",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 3,
+            name: "Done",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+    );
+
+    await seed.task((x) =>
+        x(500, {
+            name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
+            description: (ctx) => copycat.paragraph(ctx.seed),
+            deadline: (ctx) =>
+                copycat.dateString(ctx.seed, {
+                    min: new Date(),
+                    max: new Date(new Date().setDate(new Date().getDate() + 365)),
+                }),
+        }),
+    );
+
     process.exit();
 };
 

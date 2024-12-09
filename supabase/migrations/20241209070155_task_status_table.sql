@@ -9,4 +9,9 @@ BEGIN
 END $$;
 
 ALTER TABLE public.task_status ENABLE ROW LEVEL SECURITY;
+
 CREATE POLICY "Enable select for authenticated users" ON public.task_status FOR SELECT TO authenticated USING (TRUE);
+
+INSERT INTO public.task_status (name) VALUES ('To Do');
+INSERT INTO public.task_status (name) VALUES ('In Progress');
+INSERT INTO public.task_status (name) VALUES ('Done');
