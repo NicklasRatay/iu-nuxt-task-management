@@ -9,6 +9,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // Define roles for parent routes (applies to subroutes as well)
     const pageRoles: Record<string, UserRole[]> = {
         "/user": [UserRole.Administrator],
+        "/project": [UserRole.ProjectManager],
+        "/task": [UserRole.TeamMember],
     };
 
     // Find the closest parent route with role restrictions

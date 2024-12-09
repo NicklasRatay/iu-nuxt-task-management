@@ -247,11 +247,17 @@ const main = async () => {
     await seed.task((x) =>
         x(500, {
             name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
-            description: (ctx) => copycat.paragraph(ctx.seed),
+            description: (ctx) =>
+                copycat.paragraph(ctx.seed, {
+                    minSentences: 1,
+                    maxSentences: 5,
+                }),
             deadline: (ctx) =>
                 copycat.dateString(ctx.seed, {
                     min: new Date(),
-                    max: new Date(new Date().setDate(new Date().getDate() + 365)),
+                    max: new Date(
+                        new Date().setDate(new Date().getDate() + 365),
+                    ),
                 }),
         }),
     );
