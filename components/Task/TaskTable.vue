@@ -70,34 +70,96 @@
             field="name"
             header="Name"
             sortable
-        />
+            class="w-52"
+        >
+            <template #filter="{ filterModel }">
+                <InputText v-model="filterModel.value" />
+            </template>
+        </Column>
         <Column
             field="description"
             header="Description"
             sortable
-        />
+        >
+            <template #filter="{ filterModel }">
+                <InputText v-model="filterModel.value" />
+            </template>
+        </Column>
         <Column
             field="deadline"
             header="Deadline"
             sortable
-        />
+            data-type="date"
+            class="w-40"
+        >
+            <template #filter="{ filterModel }">
+                <DatePicker v-model="filterModel.value" />
+            </template>
+            <template #body="{ data }">
+                {{ new Date(data.deadline).toLocaleDateString() }}
+            </template>
+        </Column>
         <Column
             field="priority_name"
             header="Priority"
             sortable
-        />
+            :show-filter-match-modes="false"
+            :show-filter-operator="false"
+            class="w-40"
+        >
+            <template #filter="{ filterModel }">
+                <MultiSelect
+                    v-model="filterModel.value"
+                    :options="taskPriorityLOV"
+                    option-value="name"
+                    option-label="name"
+                    :max-selected-labels="1"
+                />
+            </template>
+            <template #body="{ data }">
+                {{ data.priority_name }}
+            </template>
+        </Column>
         <Column
             field="status_name"
             header="Status"
             sortable
-        />
+            :show-filter-match-modes="false"
+            :show-filter-operator="false"
+            class="w-40"
+        >
+            <template #filter="{ filterModel }">
+                <MultiSelect
+                    v-model="filterModel.value"
+                    :options="taskStatusLOV"
+                    option-value="name"
+                    option-label="name"
+                    :max-selected-labels="1"
+                />
+            </template>
+            <template #body="{ data }">
+                {{ data.status_name }}
+            </template>
+        </Column>
         <Column
             field="assigned_user_name"
             header="Assigned User"
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
-        />
+            class="min-w-52"
+        >
+            <template #filter="{ filterModel }">
+                <MultiSelect
+                    v-model="filterModel.value"
+                    :options="userLOV"
+                    option-value="full_name"
+                    option-label="full_name"
+                    filter
+                    :max-selected-labels="1"
+                />
+            </template>
+        </Column>
     </DataTable>
 </template>
 
@@ -122,17 +184,24 @@ const isMobile = computed(() => width.value <= 768);
 const supabase = useSupabaseClient<Database>();
 const simpleToast = useSimpleToast();
 
+// Allow deadline to be date
 const tasks = ref<
-    Array<Database["public"]["Views"]["vw_task_with_details"]["Row"]>
+    Array<
+        Omit<
+            Database["public"]["Views"]["vw_task_with_details"]["Row"],
+            "deadline"
+        > & { deadline: Date | null }
+    >
 >([]);
-
 const taskPriorityLOV = ref<
     Array<Database["public"]["Tables"]["task_priority"]["Row"]>
 >([]);
 const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
-const userLOV = ref<Array<Database["public"]["Tables"]["profile"]["Row"]>>([]);
+const userLOV = ref<
+    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+>([]);
 
 const loading = ref(true);
 
@@ -146,7 +215,11 @@ const loadTasks = async () => {
         return;
     }
 
-    tasks.value = data;
+    // Convert deadline to date for filter to work
+    tasks.value = data.map((task) => ({
+        ...task,
+        deadline: task.deadline ? new Date(task.deadline) : null,
+    }));
 };
 
 const loadTaskPriorities = async () => {
@@ -168,13 +241,47 @@ const loadTaskStatuses = async () => {
 };
 
 const loadUsers = async () => {
-    const { data, error } = await supabase.from("profile").select("*");
+    const { data, error } = await supabase
+        .from("vw_profile_with_full_name")
+        .select("*");
     if (error) {
         simpleToast.error(error.message);
         return;
     }
     userLOV.value = data;
 };
+
+const filters = ref();
+const resetfilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: {
+            operator: FilterOperator.AND,
+            constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+        description: {
+            operator: FilterOperator.AND,
+            constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+        deadline: {
+            operator: FilterOperator.AND,
+            constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+        },
+        priority_name: {
+            value: null,
+            matchMode: FilterMatchMode.IN,
+        },
+        status_name: {
+            value: null,
+            matchMode: FilterMatchMode.IN,
+        },
+        assigned_user_name: {
+            value: null,
+            matchMode: FilterMatchMode.IN,
+        },
+    };
+};
+resetfilters();
 
 onMounted(async () => {
     await Promise.all([
@@ -185,14 +292,6 @@ onMounted(async () => {
     ]);
     loading.value = false;
 });
-
-const filters = ref();
-const resetfilters = () => {
-    filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    };
-};
-resetfilters();
 
 defineExpose({
     loadTasks,

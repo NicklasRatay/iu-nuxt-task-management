@@ -211,8 +211,8 @@ const resetfilters = () => {
 resetfilters();
 
 onMounted(async () => {
-    loadRoles();
-    loadProfiles();
+    await loadRoles();
+    await loadProfiles();
     loading.value = false;
 });
 

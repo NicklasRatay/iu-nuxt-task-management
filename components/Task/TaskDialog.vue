@@ -54,7 +54,7 @@
                         :initial-value="task?.assigned_user_id"
                         :options="userLOV"
                         option-value="user_id"
-                        option-label="email"
+                        option-label="full_name"
                         placeholder="Select User"
                         filter
                     />
@@ -105,7 +105,9 @@ const taskPriorityLOV = ref<
 const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
-const userLOV = ref<Array<Database["public"]["Tables"]["profile"]["Row"]>>([]);
+const userLOV = ref<
+    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+>([]);
 
 const loadTask = async (id: number) => {
     const { data, error } = await supabase
@@ -139,7 +141,9 @@ const loadTaskStatuses = async () => {
 };
 
 const loadUsers = async () => {
-    const { data, error } = await supabase.from("profile").select("*");
+    const { data, error } = await supabase
+        .from("vw_profile_with_full_name")
+        .select("*");
     if (error) {
         simpleToast.error(error.message);
         return;
