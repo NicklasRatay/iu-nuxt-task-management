@@ -1,7 +1,7 @@
 <template>
     <div class="flex gap-3 items-center justify-between mb-6">
         <div class="flex gap-6 items-center">
-            <i :class="[icon, 'pi !text-3xl']" />
+            <i :class="[icon, '!text-3xl']" />
             <div>
                 <div class="text-2xl font-semibold">{{ title }}</div>
                 <div v-if="subtitle">

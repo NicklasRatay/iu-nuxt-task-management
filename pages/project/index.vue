@@ -3,7 +3,7 @@
         <CommonIconTitle
             icon="pi pi-folder"
             title="Your Projects"
-            subtitle="Create and manage your projects here."
+            subtitle="Create and manage your projects here"
             return-button-route="/"
         >
             <Button
@@ -16,10 +16,11 @@
         <div
             class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
         >
-            <div
+            <NuxtLink
                 v-for="project in projects"
                 :key="project.id!"
                 class="c-card-clickable"
+                :to="`/project/${project.id}`"
             >
                 <div class="text-xl font-semibold">{{ project.name }}</div>
                 <div class="flex justify-between text-muted-color">
@@ -29,7 +30,7 @@
                     </div>
                     <div>{{ project.completion_percentage?.toFixed(0) }} %</div>
                 </div>
-            </div>
+            </NuxtLink>
         </div>
     </div>
 </template>
