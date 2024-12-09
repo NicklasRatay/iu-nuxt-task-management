@@ -18,23 +18,11 @@
         <div
             class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
         >
-            <NuxtLink
+            <ProjectCard
                 v-for="project in projects"
                 :key="project.id!"
-                class="c-card-clickable"
-                :to="`/project/${project.id}`"
-            >
-                <div class="text-xl font-semibold">{{ project.name }}</div>
-                <div class="flex justify-between text-muted-color">
-                    <div>
-                        {{ project.completed_tasks }} of
-                        {{ project.total_tasks }} Tasks Done
-                    </div>
-                    <div>
-                        {{ project.completion_percentage?.toFixed(0) ?? 0 }} %
-                    </div>
-                </div>
-            </NuxtLink>
+                :project="project"
+            />
         </div>
     </div>
 </template>
