@@ -4,6 +4,12 @@ CREATE TABLE public.role (
 );
 
 
+DO $$
+BEGIN
+    PERFORM public.add_audit_columns('public', 'role');
+END $$;
+
+
 ALTER TABLE public.role ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable select for authenticated users" ON public.role FOR SELECT TO authenticated USING (TRUE);
 
@@ -45,11 +51,11 @@ $$ LANGUAGE PLPGSQL;
 ALTER TABLE public.user_role ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable select for authenticated users based on user_id only" ON public.user_role FOR SELECT TO authenticated USING (
     ((SELECT auth.uid()) = user_id)
-    OR ((SELECT public.has_role('Admin')))
+    OR ((SELECT public.has_role('Administrator')))
 );
-CREATE POLICY "Enable insert for authenticated admins" ON public.user_role FOR INSERT TO authenticated WITH CHECK ((SELECT public.has_role('Admin')));
-CREATE POLICY "Enable update for authenticated admins" ON public.user_role FOR UPDATE TO authenticated USING ((SELECT public.has_role('Admin')));
-CREATE POLICY "Enable delete for authenticated admins" ON public.user_role FOR DELETE TO authenticated USING ((SELECT public.has_role('Admin')));
+CREATE POLICY "Enable insert for authenticated admins" ON public.user_role FOR INSERT TO authenticated WITH CHECK ((SELECT public.has_role('Administrator')));
+CREATE POLICY "Enable update for authenticated admins" ON public.user_role FOR UPDATE TO authenticated USING ((SELECT public.has_role('Administrator')));
+CREATE POLICY "Enable delete for authenticated admins" ON public.user_role FOR DELETE TO authenticated USING ((SELECT public.has_role('Administrator')));
 
 
 DROP POLICY "Enable insert for authenticated owners" ON "public"."profile";
@@ -58,16 +64,16 @@ DROP POLICY "Enable delete for authenticated owners" ON "public"."profile";
 
 CREATE POLICY "Enable insert for owners or admins" ON "public"."profile" FOR INSERT TO "authenticated" WITH CHECK (
     ((SELECT auth.uid()) = user_id)
-    OR ((SELECT public.has_role('Admin')))
+    OR ((SELECT public.has_role('Administrator')))
 );
 CREATE POLICY "Enable update for owners or admins" ON "public"."profile" FOR UPDATE TO "authenticated" USING (
     ((SELECT auth.uid()) = user_id)
-    OR ((SELECT public.has_role('Admin')))
+    OR ((SELECT public.has_role('Administrator')))
 ) WITH CHECK (
     ((SELECT auth.uid()) = user_id)
-    OR ((SELECT public.has_role('Admin')))
+    OR ((SELECT public.has_role('Administrator')))
 );
 CREATE POLICY "Enable delete for owners or admins" ON "public"."profile" FOR DELETE TO "authenticated" USING (
     ((SELECT auth.uid()) = user_id)
-    OR ((SELECT public.has_role('Admin')))
+    OR ((SELECT public.has_role('Administrator')))
 );

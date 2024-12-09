@@ -1,8 +1,16 @@
 import { useToast } from "primevue/usetoast";
 
+/**
+ * Composable for showing different types of toast messages.
+ * @returns {Object} Object containing functions to show toast messages.
+ */
 export const useSimpleToast = () => {
     const toast = useToast();
 
+    /**
+     * Shows a blue information toast message.
+     * @param message The message to display.
+     */
     const info = (message: string) => {
         toast.add({
             severity: "info",
@@ -12,6 +20,10 @@ export const useSimpleToast = () => {
         });
     };
 
+    /**
+     * Shows a green success toast message.
+     * @param message The message to display.
+     */
     const success = (message: string) => {
         toast.add({
             severity: "success",
@@ -21,6 +33,10 @@ export const useSimpleToast = () => {
         });
     };
 
+    /**
+     * Shows a yellow warning toast message.
+     * @param message The message to display.
+     */
     const warn = (message: string) => {
         toast.add({
             severity: "warn",
@@ -30,11 +46,18 @@ export const useSimpleToast = () => {
         });
     };
 
+    /**
+     * Shows a red error toast message that does not disappear automatically.
+     * @param message The message to display.
+     */
     const error = (message: string) => {
         toast.add({ severity: "error", summary: "Error", detail: message });
         console.error(message);
     };
 
+    /**
+     * Shows a green success toast message for saving data.
+     */
     const saveSuccess = () => {
         toast.add({
             severity: "success",
@@ -43,6 +66,20 @@ export const useSimpleToast = () => {
         });
     };
 
+    /**
+     * Shows a red success toast message for deleting data.
+     */
+    const deleteSuccess = () => {
+        toast.add({
+            severity: "error",
+            summary: "Data Deleted",
+            life: 2500,
+        });
+    };
+
+    /**
+     * Shows a yellow warning toast message for invalid input fields.
+     */
     const validationWarn = () => {
         toast.add({
             severity: "warn",
@@ -52,5 +89,5 @@ export const useSimpleToast = () => {
         });
     };
 
-    return { info, success, warn, error, saveSuccess, validationWarn };
+    return { info, success, warn, error, saveSuccess, deleteSuccess, validationWarn };
 };
