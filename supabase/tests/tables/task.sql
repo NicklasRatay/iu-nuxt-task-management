@@ -31,7 +31,7 @@ SELECT has_column('public', 'task', 'assigned_user_id', 'assigned_user_id column
 SELECT col_type_is('public', 'task', 'assigned_user_id', 'uuid', 'assigned_user_id column is of type uuid');
 SELECT col_not_null('public', 'task', 'assigned_user_id', 'assigned_user_id column is not null');
 SELECT col_is_fk('public', 'task', 'assigned_user_id', 'assigned_user_id column is fk');
-SELECT fk_ok('public', 'task', 'assigned_user_id', 'public', 'user', 'id', 'assigned_user_id column is fk to public.user.id');
+SELECT fk_ok('public', 'task', 'assigned_user_id', 'public', 'profile', 'user_id', 'assigned_user_id column is fk to public.profile.user_id');
 
 SELECT has_column('public', 'task', 'name', 'name column exists');
 SELECT col_type_is('public', 'task', 'name', 'text', 'name column is of type text');
