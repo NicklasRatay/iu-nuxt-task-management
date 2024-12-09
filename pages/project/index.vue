@@ -1,16 +1,18 @@
 <template>
     <div>
+        <ProjectDialog
+            ref="refProjectDialog"
+            @inserted="($event) => navigateTo(`project/${$event}`)"
+        />
         <CommonIconTitle
             icon="pi pi-folder"
             title="Your Projects"
             subtitle="Create and manage your projects here"
-            return-button-route="/"
         >
             <Button
                 icon="pi pi-plus"
                 :label="isMobile ? undefined : 'Create Project'"
-                size="large"
-                @click="navigateTo('/project/new')"
+                @click="refProjectDialog.openDialog(null)"
             />
         </CommonIconTitle>
         <div
@@ -28,7 +30,9 @@
                         {{ project.completed_tasks }} of
                         {{ project.total_tasks }} Tasks Done
                     </div>
-                    <div>{{ project.completion_percentage?.toFixed(0) }} %</div>
+                    <div>
+                        {{ project.completion_percentage?.toFixed(0) ?? 0 }} %
+                    </div>
                 </div>
             </NuxtLink>
         </div>
@@ -37,6 +41,8 @@
 
 <script setup lang="ts">
 import type { Database } from "~/supabase/types";
+
+const refProjectDialog = ref();
 
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value <= 768);

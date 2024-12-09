@@ -98,9 +98,7 @@
                 id="role_ids"
                 label="Roles"
                 component="MultiSelect"
-                :schema="
-                    yup.array().min(1, 'At least one role is required')
-                "
+                :schema="yup.array().min(1, 'At least one role is required')"
                 :initial-value="assignedRoles"
                 :options="roleLOV"
                 option-value="id"

@@ -67,6 +67,17 @@ export const useSimpleToast = () => {
     };
 
     /**
+     * Shows a red success toast message for deleting data.
+     */
+    const deleteSuccess = () => {
+        toast.add({
+            severity: "error",
+            summary: "Data Deleted",
+            life: 2500,
+        });
+    };
+
+    /**
      * Shows a yellow warning toast message for invalid input fields.
      */
     const validationWarn = () => {
@@ -78,5 +89,5 @@ export const useSimpleToast = () => {
         });
     };
 
-    return { info, success, warn, error, saveSuccess, validationWarn };
+    return { info, success, warn, error, saveSuccess, deleteSuccess, validationWarn };
 };

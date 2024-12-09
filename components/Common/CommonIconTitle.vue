@@ -16,7 +16,6 @@
                 icon="pi pi-arrow-left"
                 :label="isMobile ? undefined : 'Return'"
                 severity="secondary"
-                size="large"
                 @click="navigateTo(returnButtonRoute)"
             />
         </div>

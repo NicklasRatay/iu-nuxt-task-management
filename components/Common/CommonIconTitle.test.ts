@@ -50,7 +50,6 @@ describe("CommonIconTitle", () => {
         const wrapper = mount(CommonIconTitle, {
             props: {
                 returnButtonRoute: "/home",
-                returnButtonLabel: "Go Back",
                 title: "Test Title",
                 icon: "pi pi-check",
             },
@@ -58,7 +57,7 @@ describe("CommonIconTitle", () => {
 
         const button = wrapper.find("button");
         expect(button.exists()).toBe(true);
-        expect(button.text()).toBe("Go Back");
+        expect(button.text()).toBe("Return");
     });
 
     it("does not render the return button if returnButtonRoute is not provided", () => {
@@ -71,19 +70,6 @@ describe("CommonIconTitle", () => {
 
         const button = wrapper.find("button");
         expect(button.exists()).toBe(false);
-    });
-
-    it("uses default return button label when not provided", () => {
-        const wrapper = mount(CommonIconTitle, {
-            props: {
-                returnButtonRoute: "/home",
-                title: "Test Title",
-                icon: "pi pi-check",
-            },
-        });
-
-        const button = wrapper.find("button");
-        expect(button.text()).toBe("Return");
     });
 
     it("adjusts return button label for mobile devices", async () => {

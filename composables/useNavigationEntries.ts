@@ -19,7 +19,7 @@ export function useNavigationEntries() {
         }
         if (await role.hasRole(UserRole.Administrator)) {
             navigationEntries.value.push({
-                label: "Nutzende",
+                label: "Users",
                 icon: "pi pi-users",
                 route: "/user",
             });

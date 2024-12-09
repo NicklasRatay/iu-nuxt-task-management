@@ -1,55 +1,43 @@
 <template>
-    <div v-if="!loading">
-        <CRUDForm @submit="saveData($event)">
-            <CommonIconTitle
-                icon="pi pi-folder"
-                :title="project?.name ?? 'New Project'"
-                :subtitle="
-                    project?.id
-                        ? 'Update the project and its tasks'
-                        : 'Set up a project with tasks'
-                "
-                return-button-route="/project"
-            >
-                <Button
-                    type="submit"
-                    icon="pi pi-save"
-                    :label="isMobile ? undefined : 'Save'"
-                    size="large"
-                />
-            </CommonIconTitle>
-            <CRUDFormField
-                id="project_name"
-                label="Project Name"
-                :schema="yup.string().required()"
-                :initial-value="project?.name"
-                component="InputText"
-            />
-        </CRUDForm>
-        <DataTable
-            :value="tasks"
-            class="c-card"
+    <div v-if="!loading && projectId">
+        <ProjectDialog
+            ref="refProjectDialog"
+            :project-id="projectId"
+            @processed="handleProjectDialogProcessed($event)"
+        />
+        <TaskDialog
+            ref="refTaskDialog"
+            :project-id="projectId"
+            @processed="refTaskTable.loadTasks()"
+        />
+        <TaskTable
+            v-if="project"
+            :project-id="project.id"
+            :project-name="project.name"
+            ref="refTaskTable"
+            @edit-button-clicked="refTaskDialog.openDialog($event.id)"
         >
-            <Column
-                field="name"
-                header="Task Name"
-            ></Column>
-            <Column
-                field="description"
-                header="Description"
-            ></Column>
-            <Column
-                field="deadline"
-                header="Deadline"
-            ></Column>
-        </DataTable>
+            <Button
+                icon="pi pi-pencil"
+                :label="isMobile ? undefined : 'Edit Project Name'"
+                severity="secondary"
+                @click="refProjectDialog.openDialog(project.id)"
+            />
+            <Button
+                icon="pi pi-plus"
+                :label="isMobile ? undefined : 'Create Task'"
+                @click="refTaskDialog.openDialog(null)"
+            />
+        </TaskTable>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Database } from "~/supabase/types";
-import * as yup from "yup";
-import type { FormSubmitEvent } from "@primevue/forms";
+
+const refProjectDialog = ref();
+const refTaskDialog = ref();
+const refTaskTable = ref();
 
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value <= 768);
@@ -63,13 +51,6 @@ const supabase = useSupabaseClient<Database>();
 const simpleToast = useSimpleToast();
 
 const project = ref<Database["public"]["Tables"]["project"]["Row"]>();
-const tasks = ref<Array<Database["public"]["Tables"]["task"]["Row"]>>([]);
-const taskPriorities = ref<
-    Array<Database["public"]["Tables"]["task_priority"]["Row"]>
->([]);
-const taskStatuses = ref<
-    Array<Database["public"]["Tables"]["task_status"]["Row"]>
->([]);
 
 const loadProject = async () => {
     if (!projectId) return;
@@ -88,73 +69,18 @@ const loadProject = async () => {
     project.value = data;
 };
 
-const loadTasks = async () => {
-    if (!projectId) return;
-
-    const { data, error } = await supabase
-        .from("task")
-        .select("*")
-        .eq("project_id", projectId);
-
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    tasks.value = data;
-};
-
-const loadTaskPriorities = async () => {
-    const { data, error } = await supabase.from("task_priority").select("*");
-
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    taskPriorities.value = data;
-};
-
-const loadTaskStatuses = async () => {
-    const { data, error } = await supabase.from("task_status").select("*");
-
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    taskStatuses.value = data;
-};
-
 const loading = ref(true);
 
 onMounted(async () => {
-    await Promise.all([
-        loadProject(),
-        loadTasks(),
-        loadTaskPriorities(),
-        loadTaskStatuses(),
-    ]);
+    await loadProject();
     loading.value = false;
 });
 
-const saveData = async (event: FormSubmitEvent) => {
-    if (!event.valid) {
-        simpleToast.validationWarn();
-        return;
+const handleProjectDialogProcessed = (event: string) => {
+    if (event === "deleted") {
+        navigateTo("/project");
+    } else {
+        loadProject();
     }
-
-    const { error } = await supabase.rpc("upsert_project_with_tasks", {
-        p_project_id: projectId ?? undefined,
-        p_project_name: event.values.project_name,
-        p_tasks: tasks.value,
-    });
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    simpleToast.saveSuccess();
-    navigateTo("/project");
 };
 </script>
