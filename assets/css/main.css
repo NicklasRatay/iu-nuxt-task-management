@@ -60,3 +60,7 @@ body {
 .c-card {
     @apply p-6 rounded-lg c-bg-region border c-border-color;
 }
+
+.c-card-clickable {
+    @apply c-card cursor-pointer hover:shadow-lg transition-shadow duration-300;
+}
