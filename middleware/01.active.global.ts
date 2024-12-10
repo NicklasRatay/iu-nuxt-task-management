@@ -2,7 +2,7 @@ import type { Database } from "~/supabase/types";
 
 export default defineNuxtRouteMiddleware(async (to) => {
     // Prevent infinite redirect loop
-    if (["/unauthorized", "/login"].includes(to.path)) {
+    if (["/inactive", "/login"].includes(to.path)) {
         return;
     }
 
@@ -23,6 +23,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     // Handle error or inactive user
     if (error || !data?.is_active) {
-        return navigateTo("/unauthorized");
+        return navigateTo("/inactive");
     }
 });
