@@ -1,20 +1,25 @@
 <template>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-6 items-center">
+            <ChartTaskStatus />
+            <ChartTaskPriority />
+        </div>
         <div class="flex flex-col gap-6">
             <div class="flex gap-6">
                 <div class="c-card w-full text-center font-light">
-                    <div class="text-8xl">
+                    <div class="text-7xl">
                         {{ totalProjects }}
                     </div>
-                    <div class="text-5xl">Projects</div>
+                    <div class="text-4xl">Projects</div>
                 </div>
                 <div class="c-card w-full text-center font-light">
-                    <div class="text-8xl">
+                    <div class="text-7xl">
                         {{ totalTasks }}
                     </div>
-                    <div class="text-5xl">Tasks</div>
+                    <div class="text-4xl">Tasks</div>
                 </div>
             </div>
+            <div class="text-2xl font-semibold">Upcoming Tasks</div>
             <TaskCard
                 v-for="task in upcomingTasks"
                 :key="task.id!"

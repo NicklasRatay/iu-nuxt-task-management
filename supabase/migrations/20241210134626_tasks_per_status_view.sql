@@ -1,4 +1,4 @@
-CREATE VIEW vw_tasks_per_status WITH (SECURITY_INVOKER = TRUE) AS
+CREATE OR REPLACE VIEW vw_all_tasks_per_status WITH (SECURITY_INVOKER = TRUE) AS
 SELECT
     ts.id AS status_id,
     ts.name AS status_name,
