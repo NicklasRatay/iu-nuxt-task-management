@@ -80,6 +80,7 @@
             field="description"
             header="Description"
             sortable
+            class="min-w-80"
         >
             <template #filter="{ filterModel }">
                 <InputText v-model="filterModel.value" />
@@ -117,7 +118,12 @@
                 />
             </template>
             <template #body="{ data }">
-                {{ data.priority_name }}
+                <Tag
+                    :severity="getPrioritySeverity(data.priority_id)"
+                    :icon="getPriorityIcon(data.priority_id)"
+                >
+                    {{ data.priority_name }}
+                </Tag>
             </template>
         </Column>
         <Column
@@ -138,7 +144,12 @@
                 />
             </template>
             <template #body="{ data }">
-                {{ data.status_name }}
+                <Tag
+                    :icon="getStatusIcon(data.status_id)"
+                    :severity="getStatusSeverity(data.status_id)"
+                >
+                    {{ data.status_name }}
+                </Tag>
             </template>
         </Column>
         <Column
@@ -195,7 +206,7 @@ const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
 const userLOV = ref<
-    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+    Array<Database["public"]["Views"]["vw_team_member_lov"]["Row"]>
 >([]);
 
 const loading = ref(true);
@@ -220,7 +231,7 @@ const loadTaskStatuses = async () => {
 
 const loadUsers = async () => {
     const { data, error } = await supabase
-        .from("vw_profile_with_full_name")
+        .from("vw_team_member_lov")
         .select("*");
     if (error) {
         simpleToast.error(error.message);
@@ -260,6 +271,62 @@ const resetfilters = () => {
     };
 };
 resetfilters();
+
+const getPriorityIcon = (priorityId: number) => {
+    switch (priorityId) {
+        case 1:
+            return "pi pi-angle-down";
+        case 2:
+            return "pi pi-minus";
+        case 3:
+            return "pi pi-angle-up";
+        case 4:
+            return "pi pi-angle-double-up";
+        default:
+            return undefined;
+    }
+};
+
+const getPrioritySeverity = (priorityId: number) => {
+    switch (priorityId) {
+        case 1:
+            return "secondary";
+        case 2:
+            return "primary";
+        case 3:
+            return "warn";
+        case 4:
+            return "danger";
+        default:
+            return undefined;
+    }
+};
+
+const getStatusIcon = (statusId: number) => {
+    switch (statusId) {
+        case 1:
+            return "pi pi-circle";
+        case 2:
+            return "pi pi-cog";
+        case 3:
+            return "pi pi-check";
+        default:
+            return undefined;
+    }
+};
+
+const getStatusSeverity = (statusId: number) => {
+    switch (statusId) {
+        case 1:
+            return "warn";
+        case 2:
+            return "primary";
+        case 3:
+            return "success";
+        default:
+            return undefined;
+    }
+};
 
 onMounted(async () => {
     await Promise.all([loadTaskPriorities(), loadTaskStatuses(), loadUsers()]);

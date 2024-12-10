@@ -9,11 +9,75 @@ const main = async () => {
     await seed.$resetDatabase();
 
     const currentTime = new Date();
-    let userCounter = 1;
+
+    // Put task priorities in seed store as they already are in the database
+    seed.$store.task_priority.push(
+        {
+            id: 1,
+            name: "Low",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 2,
+            name: "Medium",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 3,
+            name: "High",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 4,
+            name: "Critical",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+    );
+
+    // Put task statuses in seed store as they already are in the database
+    seed.$store.task_status.push(
+        {
+            id: 1,
+            name: "To Do",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 2,
+            name: "In Progress",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+        {
+            id: 3,
+            name: "Done",
+            created_at: currentTime,
+            created_by: null,
+            updated_at: currentTime,
+            updated_by: null,
+        },
+    );
 
     // Test users to login with and to reference from other tables
+    let userCounter = 1;
     const users = await seed.users((x) =>
-        x(25, {
+        x(20, {
             instance_id: "00000000-0000-0000-0000-000000000000",
             aud: "authenticated",
             role: "authenticated",
@@ -91,6 +155,9 @@ const main = async () => {
             REAUTHENTICATION_TOKEN = '';`,
     );
 
+    const projectManagers: string[] = [];
+    const teamMembers: string[] = [];
+
     for (let i = 0; i < users.users.length; i++) {
         const user = users.users[i];
 
@@ -147,11 +214,13 @@ const main = async () => {
                     3
                 );`,
             );
+            projectManagers.push(user.id);
+            teamMembers.push(user.id);
             continue;
         }
 
         // Deactivate some users
-        if ([4, 7, 20].includes(i)) {
+        if ([4, 7, 13].includes(i)) {
             console.log(
                 `UPDATE public.profile
                     SET
@@ -172,95 +241,51 @@ const main = async () => {
                 ${roleId}
             );`,
         );
+
+        switch (roleId) {
+            case 2:
+                projectManagers.push(user.id);
+                break;
+            case 3:
+                teamMembers.push(user.id);
+                break;
+        }
     }
 
-    await seed.project((x) =>
-        x(50, {
-            name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
-        }),
-    );
+    for (const userId of projectManagers) {
+        const projects = await seed.project((x) =>
+            x(
+                { min: 3, max: 8 },
+                {
+                    name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
+                    created_by: userId,
+                },
+            ),
+        );
 
-    // Put task priorities in seed store as they already are in the database
-    seed.$store.task_priority.push(
-        {
-            id: 1,
-            name: "Low",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-        {
-            id: 2,
-            name: "Medium",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-        {
-            id: 3,
-            name: "High",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-        {
-            id: 4,
-            name: "Critical",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-    );
-
-    // Put task statuses in seed store as they already are in the database
-    seed.$store.task_status.push(
-        {
-            id: 1,
-            name: "To Do",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-        {
-            id: 2,
-            name: "In Progress",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-        {
-            id: 3,
-            name: "Done",
-            created_at: currentTime,
-            created_by: null,
-            updated_at: currentTime,
-            updated_by: null,
-        },
-    );
-
-    await seed.task((x) =>
-        x(500, {
-            name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
-            description: (ctx) =>
-                copycat.paragraph(ctx.seed, {
-                    minSentences: 1,
-                    maxSentences: 5,
-                }),
-            deadline: (ctx) =>
-                copycat.dateString(ctx.seed, {
-                    min: new Date(),
-                    max: new Date(
-                        new Date().setDate(new Date().getDate() + 365),
-                    ),
-                }),
-        }),
-    );
+        for (const project of projects.project) {
+            await seed.task((x) =>
+                x({ min: 3, max: 15 }, ({ index }) => ({
+                    name: (ctx) => copycat.words(ctx.seed, { min: 1, max: 5 }),
+                    description: (ctx) =>
+                        copycat.paragraph(ctx.seed, {
+                            minSentences: 1,
+                            maxSentences: 5,
+                        }),
+                    deadline: (ctx) =>
+                        copycat.dateString(ctx.seed, {
+                            min: new Date(),
+                            max: new Date(
+                                new Date().setDate(new Date().getDate() + 365),
+                            ),
+                        }),
+                    assigned_user_id: copycat.oneOf(index, teamMembers),
+                    project_id: project.id,
+                    created_by: project.created_by,
+                })),
+            );
+        }
+    }
 
     process.exit();
 };

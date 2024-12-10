@@ -19,7 +19,7 @@
         state-key="project-table-state"
         selection-mode="single"
         meta-key-selection
-        class="c-card !p-0 c-max-h-half"
+        class="c-card !p-0 c-min-h-half c-max-h-half"
         @row-select="onSelectionChange($event.data)"
         @row-unselect="onSelectionChange(null)"
     >

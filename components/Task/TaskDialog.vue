@@ -106,7 +106,7 @@ const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
 const userLOV = ref<
-    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+    Array<Database["public"]["Views"]["vw_team_member_lov"]["Row"]>
 >([]);
 
 const loadTask = async (taskId: number) => {
@@ -142,7 +142,7 @@ const loadTaskStatuses = async () => {
 
 const loadUsers = async () => {
     const { data, error } = await supabase
-        .from("vw_profile_with_full_name")
+        .from("vw_team_member_lov")
         .select("*");
     if (error) {
         simpleToast.error(error.message);

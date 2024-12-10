@@ -17,7 +17,7 @@
             >
                 <Button
                     icon="pi pi-plus"
-                    :label="isMobile ? undefined : 'Create Project'"
+                    :label="isMobile ? undefined : 'Create'"
                     @click="refProjectDialog.openDialog(null)"
                 />
             </ProjectTable>
@@ -27,7 +27,7 @@
             >
                 <Button
                     icon="pi pi-plus"
-                    :label="isMobile ? undefined : 'Create Task'"
+                    :label="isMobile ? undefined : 'Create'"
                     :disabled="!selectedProjectId"
                     @click="refTaskDialog.openDialog(null)"
                 />
