@@ -21,6 +21,7 @@
                     <template #item="{ element }">
                         <TaskCard
                             :task="element"
+                            clickable
                             :data-id="element.id"
                         />
                     </template>

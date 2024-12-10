@@ -20,10 +20,7 @@ CREATE POLICY "Enable select for assigned users or task owners"
 ON public.task 
 FOR SELECT 
 TO authenticated 
-USING (
-    (assigned_user_id = (SELECT auth.uid())) 
-    OR (created_by = (SELECT auth.uid()))
-);
+USING (true);
 
 CREATE POLICY "Enable insert for Project Managers" 
 ON public.task 

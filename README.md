@@ -17,7 +17,7 @@ Requirements:
 Cloning this Repository:
 
 ```bash
-git clone https://github.com/NicklasRatay/iu-quiz-app.git
+git clone https://github.com/NicklasRatay/iu-nuxt-task-management.git
 ```
 
 Installing Dependencies:

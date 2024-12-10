@@ -46,6 +46,7 @@
         "@primevue/forms": "^4.2.4",
         "@primevue/nuxt-module": "^4.2.4",
         "@primevue/themes": "^4.2.4",
+        "chart.js": "^4.4.7",
         "lodash-es": "^4.17.21",
         "nuxt-app": "file:",
         "nuxt-lodash": "^2.5.3",
