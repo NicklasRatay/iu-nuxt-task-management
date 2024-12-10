@@ -1,5 +1,10 @@
 <template>
-    <div class="c-card-clickable !p-3 flex flex-col gap-2">
+    <div
+        :class="[
+            clickable ? 'c-card-clickable' : 'c-card',
+            '!p-3 flex flex-col gap-2',
+        ]"
+    >
         <div class="font-semibold text-center md:text-lg md:text-start">
             {{ task.name }}
         </div>
@@ -33,5 +38,6 @@ const isMobile = computed(() => width.value <= 768);
 
 defineProps<{
     task: Database["public"]["Views"]["vw_task_with_details"]["Row"];
+    clickable?: boolean;
 }>();
 </script>
