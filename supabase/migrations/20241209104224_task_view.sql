@@ -8,8 +8,11 @@ SELECT
     t.updated_at,
     p.id AS project_id,
     p.name AS project_name,
+    tp.id AS priority_id,
     tp.name AS priority_name,
+    ts.id AS status_id,
     ts.name AS status_name,
+    pr.user_id AS assigned_user_id,
     pr.email AS assigned_user_email,
     CONCAT(pr.first_name, ' ', pr.last_name) AS assigned_user_name
 FROM

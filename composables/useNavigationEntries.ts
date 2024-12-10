@@ -10,6 +10,13 @@ export function useNavigationEntries() {
     const role = useRole();
 
     const populateNavigationEntries = async () => {
+        if (await role.hasRole(UserRole.TeamMember)) {
+            navigationEntries.value.push({
+                label: "Your Tasks",
+                icon: "pi pi-list-check",
+                route: "/task",
+            });
+        }
         if (await role.hasRole(UserRole.ProjectManager)) {
             navigationEntries.value.push({
                 label: "Your Projects",

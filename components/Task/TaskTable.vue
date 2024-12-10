@@ -16,7 +16,7 @@
         filter-display="menu"
         state-storage="session"
         state-key="task-table-state"
-        class="c-card !p-0 c-max-h-full"
+        class="c-card !p-0 c-max-h-half"
     >
         <template #empty>
             <div class="text-center">No Tasks Found</div>
@@ -32,7 +32,7 @@
                         v-if="!isMobile"
                         class="text-2xl font-semibold"
                     >
-                        Tasks of {{ props.projectName }}
+                        Tasks of Selected Project
                     </div>
                     <IconField>
                         <InputIcon class="pi pi-search" />
@@ -80,6 +80,7 @@
             field="description"
             header="Description"
             sortable
+            class="min-w-80"
         >
             <template #filter="{ filterModel }">
                 <InputText v-model="filterModel.value" />
@@ -100,28 +101,34 @@
             </template>
         </Column>
         <Column
-            field="priority_name"
+            field="priority_id"
             header="Priority"
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
             class="w-40"
+            body-class="!py-1"
         >
             <template #filter="{ filterModel }">
                 <MultiSelect
                     v-model="filterModel.value"
                     :options="taskPriorityLOV"
-                    option-value="name"
+                    option-value="id"
                     option-label="name"
                     :max-selected-labels="1"
                 />
             </template>
             <template #body="{ data }">
-                {{ data.priority_name }}
+                <i
+                    :class="[
+                        getTaskPriorityIcon(data.priority_id),
+                        '!text-2xl w-full text-center',
+                    ]"
+                />
             </template>
         </Column>
         <Column
-            field="status_name"
+            field="status_id"
             header="Status"
             sortable
             :show-filter-match-modes="false"
@@ -132,13 +139,18 @@
                 <MultiSelect
                     v-model="filterModel.value"
                     :options="taskStatusLOV"
-                    option-value="name"
+                    option-value="id"
                     option-label="name"
                     :max-selected-labels="1"
                 />
             </template>
             <template #body="{ data }">
-                {{ data.status_name }}
+                <Tag
+                    :severity="getStatusSeverity(data.status_id)"
+                    class="w-full"
+                >
+                    {{ data.status_name }}
+                </Tag>
             </template>
         </Column>
         <Column
@@ -147,7 +159,7 @@
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
-            class="min-w-52"
+            class="w-40 whitespace-nowrap"
         >
             <template #filter="{ filterModel }">
                 <MultiSelect
@@ -166,11 +178,6 @@
 <script setup lang="ts">
 import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 import type { Database } from "~/supabase/types";
-
-const props = defineProps<{
-    projectId: Number;
-    projectName: string;
-}>();
 
 defineEmits<{
     editButtonClicked: [
@@ -200,27 +207,10 @@ const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
 const userLOV = ref<
-    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+    Array<Database["public"]["Views"]["vw_team_member_lov"]["Row"]>
 >([]);
 
 const loading = ref(true);
-
-const loadTasks = async () => {
-    const { data, error } = await supabase
-        .from("vw_task_with_details")
-        .select("*")
-        .eq("project_id", props.projectId);
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    // Convert deadline to date for filter to work
-    tasks.value = data.map((task) => ({
-        ...task,
-        deadline: task.deadline ? new Date(task.deadline) : null,
-    }));
-};
 
 const loadTaskPriorities = async () => {
     const { data, error } = await supabase.from("task_priority").select("*");
@@ -242,7 +232,7 @@ const loadTaskStatuses = async () => {
 
 const loadUsers = async () => {
     const { data, error } = await supabase
-        .from("vw_profile_with_full_name")
+        .from("vw_team_member_lov")
         .select("*");
     if (error) {
         simpleToast.error(error.message);
@@ -283,15 +273,50 @@ const resetfilters = () => {
 };
 resetfilters();
 
+const getStatusSeverity = (statusId: number) => {
+    switch (statusId) {
+        case 1:
+            return "warn";
+        case 2:
+            return "primary";
+        case 3:
+            return "success";
+        default:
+            return undefined;
+    }
+};
+
 onMounted(async () => {
-    await Promise.all([
-        loadTasks(),
-        loadTaskPriorities(),
-        loadTaskStatuses(),
-        loadUsers(),
-    ]);
+    await Promise.all([loadTaskPriorities(), loadTaskStatuses(), loadUsers()]);
     loading.value = false;
 });
+
+const loadTasks = async (projectId: number | null) => {
+    if (!projectId) {
+        tasks.value = [];
+        return;
+    }
+
+    loading.value = true;
+
+    const { data, error } = await supabase
+        .from("vw_task_with_details")
+        .select("*")
+        .eq("project_id", projectId);
+    if (error) {
+        simpleToast.error(error.message);
+        loading.value = false;
+        return;
+    }
+
+    // Convert deadline to date for filter to work
+    tasks.value = data.map((task) => ({
+        ...task,
+        deadline: task.deadline ? new Date(task.deadline) : null,
+    }));
+
+    loading.value = false;
+};
 
 defineExpose({
     loadTasks,

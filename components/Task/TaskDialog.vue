@@ -33,7 +33,7 @@
                         component="DatePicker"
                         :schema="yup.date().required()"
                         :initial-value="task?.deadline"
-                        :minDate="new Date()"
+                        :min-date="new Date()"
                     />
                     <CRUDFormField
                         id="task_priority_id"
@@ -82,11 +82,11 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
-import type { Database } from "~/supabase/types";
 import type { FormSubmitEvent } from "@primevue/forms";
+import type { Database } from "~/supabase/types";
 
 const props = defineProps<{
-    projectId: Number;
+    projectId: number | null;
 }>();
 
 const emits = defineEmits<{
@@ -106,14 +106,14 @@ const taskStatusLOV = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
 >([]);
 const userLOV = ref<
-    Array<Database["public"]["Views"]["vw_profile_with_full_name"]["Row"]>
+    Array<Database["public"]["Views"]["vw_team_member_lov"]["Row"]>
 >([]);
 
-const loadTask = async (id: number) => {
+const loadTask = async (taskId: number) => {
     const { data, error } = await supabase
         .from("task")
         .select("*")
-        .eq("id", id)
+        .eq("id", taskId)
         .single();
     if (error) {
         simpleToast.error(error.message);
@@ -142,7 +142,7 @@ const loadTaskStatuses = async () => {
 
 const loadUsers = async () => {
     const { data, error } = await supabase
-        .from("vw_profile_with_full_name")
+        .from("vw_team_member_lov")
         .select("*");
     if (error) {
         simpleToast.error(error.message);
@@ -162,6 +162,7 @@ const insertData = async (event: FormSubmitEvent) => {
     }
 
     event.values.deadline = normalizeToUTC(event.values.deadline);
+    delete event.values.undefined; // Sometimes, the form values contain undefined which causes supabase error
 
     const { error } = await supabase.from("task").insert({
         project_id: props.projectId,
@@ -185,6 +186,7 @@ const updateData = async (event: FormSubmitEvent) => {
     }
 
     event.values.deadline = normalizeToUTC(event.values.deadline);
+    delete event.values.undefined; // Sometimes, the form values contain undefined which causes supabase error
 
     const { error } = await supabase
         .from("task")
@@ -219,10 +221,10 @@ const deleteData = async () => {
     isDialogVisible.value = false;
 };
 
-const openDialog = async (id: number | null) => {
+const openDialog = async (taskId: number | null) => {
     task.value = null;
-    if (id) {
-        await loadTask(id);
+    if (taskId) {
+        await loadTask(taskId);
     }
     isDialogVisible.value = true;
 };

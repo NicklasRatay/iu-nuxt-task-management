@@ -2,17 +2,13 @@ import { it, expect, describe } from "vitest";
 import { mount, config } from "@vue/test-utils";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
-import TaskDialog from "./TaskDialog.vue";
+import ProjectTable from "./ProjectTable.vue";
 
 config.global.plugins = [PrimeVue, ToastService];
 
-describe("TaskDialog", () => {
+describe("ProjectTable", () => {
     it("can be mounted", () => {
-        const wrapper = mount(TaskDialog, {
-            props: {
-                projectId: 1,
-            },
-        });
+        const wrapper = mount(ProjectTable);
         expect(wrapper.exists()).toBe(true);
     });
 });

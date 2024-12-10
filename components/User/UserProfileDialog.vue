@@ -59,10 +59,14 @@ onMounted(async () => {
 });
 
 const loadProfile = async () => {
+    if (!user.value) {
+        return;
+    }
+
     const { data, error } = await supabase
         .from("vw_profile_with_roles")
         .select("*")
-        .eq("user_id", user.value?.id as never)
+        .eq("user_id", user.value.id)
         .single();
     if (error) {
         simpleToast.error(error.message);
