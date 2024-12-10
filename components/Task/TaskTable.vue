@@ -101,33 +101,34 @@
             </template>
         </Column>
         <Column
-            field="priority_name"
+            field="priority_id"
             header="Priority"
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
             class="w-40"
+            body-class="!py-1"
         >
             <template #filter="{ filterModel }">
                 <MultiSelect
                     v-model="filterModel.value"
                     :options="taskPriorityLOV"
-                    option-value="name"
+                    option-value="id"
                     option-label="name"
                     :max-selected-labels="1"
                 />
             </template>
             <template #body="{ data }">
-                <Tag
-                    :severity="getPrioritySeverity(data.priority_id)"
-                    :icon="getPriorityIcon(data.priority_id)"
-                >
-                    {{ data.priority_name }}
-                </Tag>
+                <i
+                    :class="[
+                        getTaskPriorityIcon(data.priority_id),
+                        '!text-2xl w-full text-center',
+                    ]"
+                />
             </template>
         </Column>
         <Column
-            field="status_name"
+            field="status_id"
             header="Status"
             sortable
             :show-filter-match-modes="false"
@@ -138,15 +139,15 @@
                 <MultiSelect
                     v-model="filterModel.value"
                     :options="taskStatusLOV"
-                    option-value="name"
+                    option-value="id"
                     option-label="name"
                     :max-selected-labels="1"
                 />
             </template>
             <template #body="{ data }">
                 <Tag
-                    :icon="getStatusIcon(data.status_id)"
                     :severity="getStatusSeverity(data.status_id)"
+                    class="w-full"
                 >
                     {{ data.status_name }}
                 </Tag>
@@ -158,7 +159,7 @@
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
-            class="w-60 whitespace-nowrap"
+            class="w-40 whitespace-nowrap"
         >
             <template #filter="{ filterModel }">
                 <MultiSelect
@@ -271,49 +272,6 @@ const resetfilters = () => {
     };
 };
 resetfilters();
-
-const getPriorityIcon = (priorityId: number) => {
-    switch (priorityId) {
-        case 1:
-            return "pi pi-angle-down";
-        case 2:
-            return "pi pi-minus";
-        case 3:
-            return "pi pi-angle-up";
-        case 4:
-            return "pi pi-angle-double-up";
-        default:
-            return undefined;
-    }
-};
-
-const getPrioritySeverity = (priorityId: number) => {
-    switch (priorityId) {
-        case 1:
-            return "secondary";
-        case 2:
-            return "primary";
-        case 3:
-            return "warn";
-        case 4:
-            return "danger";
-        default:
-            return undefined;
-    }
-};
-
-const getStatusIcon = (statusId: number) => {
-    switch (statusId) {
-        case 1:
-            return "pi pi-circle";
-        case 2:
-            return "pi pi-cog";
-        case 3:
-            return "pi pi-check";
-        default:
-            return undefined;
-    }
-};
 
 const getStatusSeverity = (statusId: number) => {
     switch (statusId) {

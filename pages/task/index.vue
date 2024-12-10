@@ -1,28 +1,39 @@
 <template>
-    <div class="grid grid-cols-3 gap-x-6 xl:gap-x-24 xl:px-16 w-full">
-        <div
-            v-for="taskStatus in taskStatuses"
+    <div class="flex 2xl:gap-x-12 2xl:px-16 w-full">
+        <template
+            v-for="(taskStatus, index) in taskStatuses"
             :key="taskStatus.id"
         >
-            <div class="font-bold text-xl text-center whitespace-nowrap mb-4">
-                {{ taskStatus.name }}
+            <div class="flex-grow flex-shrink-0 basis-0">
+                <div
+                    class="font-bold text-xl md:text-2xl text-center whitespace-nowrap mb-6"
+                >
+                    {{ taskStatus.name }}
+                </div>
+                <draggable
+                    v-model="groupedTasks[taskStatus.id]"
+                    group="tasks"
+                    item-key="id"
+                    class="flex-grow space-y-6 c-min-h-full"
+                    :data-status-id="taskStatus.id"
+                    @end="onTaskDrop"
+                >
+                    <template #item="{ element }">
+                        <TaskCard
+                            :task="element"
+                            :data-id="element.id"
+                        />
+                    </template>
+                </draggable>
             </div>
-            <draggable
-                v-model="groupedTasks[taskStatus.id]"
-                group="tasks"
-                item-key="id"
-                class="flex-grow space-y-6 min-h-full"
-                :data-status-id="taskStatus.id"
-                @end="onTaskDrop"
-            >
-                <template #item="{ element }">
-                    <TaskCard
-                        :task="element"
-                        :data-id="element.id"
-                    />
-                </template>
-            </draggable>
-        </div>
+
+            <!-- Vertical Divider -->
+            <Divider
+                v-if="index < taskStatuses.length - 1"
+                layout="vertical"
+                class="h-auto mx-6 xl:mx-24"
+            />
+        </template>
     </div>
 </template>
 

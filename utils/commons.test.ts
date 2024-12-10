@@ -23,3 +23,35 @@ describe("normalizeToUTC", () => {
         expect(result).toBe("2024-12-31T00:00:00.000Z");
     });
 });
+
+describe("getTaskPriorityIcon", () => {
+    it("should return the correct class for priority 1", () => {
+        const result = getTaskPriorityIcon(1);
+        expect(result).toBe("pi pi-angle-down text-muted-color");
+    });
+
+    it("should return the correct class for priority 2", () => {
+        const result = getTaskPriorityIcon(2);
+        expect(result).toBe("pi pi-minus text-primary");
+    });
+
+    it("should return the correct class for priority 3", () => {
+        const result = getTaskPriorityIcon(3);
+        expect(result).toBe("pi pi-angle-up text-orange-500");
+    });
+
+    it("should return the correct class for priority 4", () => {
+        const result = getTaskPriorityIcon(4);
+        expect(result).toBe("pi pi-angle-double-up text-red-500");
+    });
+
+    it("should return undefined for null", () => {
+        const result = getTaskPriorityIcon(null);
+        expect(result).toBeUndefined();
+    });
+
+    it("should return undefined for an invalid priorityId", () => {
+        const result = getTaskPriorityIcon(999);
+        expect(result).toBeUndefined();
+    });
+});

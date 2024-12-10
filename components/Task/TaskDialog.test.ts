@@ -8,7 +8,11 @@ config.global.plugins = [PrimeVue, ToastService];
 
 describe("TaskDialog", () => {
     it("can be mounted", () => {
-        const wrapper = mount(TaskDialog);
+        const wrapper = mount(TaskDialog, {
+            props: {
+                projectId: 1,
+            },
+        });
         expect(wrapper.exists()).toBe(true);
     });
 });

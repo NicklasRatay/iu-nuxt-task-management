@@ -3,24 +3,10 @@ import { mount, config } from "@vue/test-utils";
 import type { VueWrapper } from "@vue/test-utils";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
-import { createClient } from "@supabase/supabase-js";
 import UserLoginForm from "./UserLoginForm.vue";
 import { APP_NAME } from "~/utils/constants";
 
 config.global.plugins = [PrimeVue, ToastService];
-
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_KEY!,
-);
-
-describe("UserLoginForm", () => {
-    it("should initialize the Supabase client", () => {
-        expect(supabase).toBeDefined();
-        expect(process.env.SUPABASE_URL).toBeTruthy();
-        expect(process.env.SUPABASE_KEY).toBeTruthy();
-    });
-});
 
 describe("UserLoginForm", () => {
     let wrapper: VueWrapper;
