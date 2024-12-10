@@ -40,12 +40,11 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
-import type { Database } from "~/supabase/types";
 import type { FormSubmitEvent } from "@primevue/forms";
+import type { Database } from "~/supabase/types";
 
 const emits = defineEmits<{
     processed: ["inserted" | "updated" | "deleted"];
-    inserted: [number];
 }>();
 
 const supabase = useSupabaseClient<Database>();
@@ -75,7 +74,7 @@ const insertData = async (event: FormSubmitEvent) => {
         return;
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from("project")
         .insert({
             ...event.values,
@@ -88,7 +87,6 @@ const insertData = async (event: FormSubmitEvent) => {
     }
 
     emits("processed", "inserted");
-    emits("inserted", data.id);
     simpleToast.saveSuccess();
     isDialogVisible.value = false;
 };

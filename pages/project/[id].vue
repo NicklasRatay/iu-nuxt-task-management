@@ -12,9 +12,9 @@
         />
         <TaskTable
             v-if="project"
+            ref="refTaskTable"
             :project-id="project.id"
             :project-name="project.name"
-            ref="refTaskTable"
             @edit-button-clicked="refTaskDialog.openDialog($event.id)"
         >
             <Button

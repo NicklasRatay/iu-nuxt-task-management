@@ -16,7 +16,7 @@
         filter-display="menu"
         state-storage="session"
         state-key="task-table-state"
-        class="c-card !p-0 c-max-h-full"
+        class="c-card !p-0 c-max-h-half"
     >
         <template #empty>
             <div class="text-center">No Tasks Found</div>
@@ -32,7 +32,7 @@
                         v-if="!isMobile"
                         class="text-2xl font-semibold"
                     >
-                        Tasks of {{ props.projectName }}
+                        Tasks of Selected Project
                     </div>
                     <IconField>
                         <InputIcon class="pi pi-search" />
@@ -147,7 +147,7 @@
             sortable
             :show-filter-match-modes="false"
             :show-filter-operator="false"
-            class="min-w-52"
+            class="w-60 whitespace-nowrap"
         >
             <template #filter="{ filterModel }">
                 <MultiSelect
@@ -166,11 +166,6 @@
 <script setup lang="ts">
 import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 import type { Database } from "~/supabase/types";
-
-const props = defineProps<{
-    projectId: Number;
-    projectName: string;
-}>();
 
 defineEmits<{
     editButtonClicked: [
@@ -204,23 +199,6 @@ const userLOV = ref<
 >([]);
 
 const loading = ref(true);
-
-const loadTasks = async () => {
-    const { data, error } = await supabase
-        .from("vw_task_with_details")
-        .select("*")
-        .eq("project_id", props.projectId);
-    if (error) {
-        simpleToast.error(error.message);
-        return;
-    }
-
-    // Convert deadline to date for filter to work
-    tasks.value = data.map((task) => ({
-        ...task,
-        deadline: task.deadline ? new Date(task.deadline) : null,
-    }));
-};
 
 const loadTaskPriorities = async () => {
     const { data, error } = await supabase.from("task_priority").select("*");
@@ -284,14 +262,36 @@ const resetfilters = () => {
 resetfilters();
 
 onMounted(async () => {
-    await Promise.all([
-        loadTasks(),
-        loadTaskPriorities(),
-        loadTaskStatuses(),
-        loadUsers(),
-    ]);
+    await Promise.all([loadTaskPriorities(), loadTaskStatuses(), loadUsers()]);
     loading.value = false;
 });
+
+const loadTasks = async (projectId: number | null) => {
+    if (!projectId) {
+        tasks.value = [];
+        return;
+    }
+
+    loading.value = true;
+
+    const { data, error } = await supabase
+        .from("vw_task_with_details")
+        .select("*")
+        .eq("project_id", projectId);
+    if (error) {
+        simpleToast.error(error.message);
+        loading.value = false;
+        return;
+    }
+
+    // Convert deadline to date for filter to work
+    tasks.value = data.map((task) => ({
+        ...task,
+        deadline: task.deadline ? new Date(task.deadline) : null,
+    }));
+
+    loading.value = false;
+};
 
 defineExpose({
     loadTasks,

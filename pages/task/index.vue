@@ -27,8 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from "~/supabase/types";
 import draggable from "vuedraggable";
+import type { SortableEvent } from "sortablejs";
+import type { Database } from "~/supabase/types";
 
 const taskStatuses = ref<
     Array<Database["public"]["Tables"]["task_status"]["Row"]>
@@ -91,17 +92,24 @@ onMounted(async () => {
     await loadTasks(); // Load tasks once buckets are ready
 });
 
-const onTaskDrop = async (event: any) => {
+const onTaskDrop = async (event: SortableEvent) => {
     const { to, item } = event;
 
     // Get the new status from the target container's attribute or reference
     const newStatus = to.getAttribute("data-status-id");
     const taskId = item.getAttribute("data-id"); // Ensure your tasks have data-id
 
+    if (!newStatus || !taskId) {
+        console.error(
+            "Missing necessary attributes: data-status-id or data-id",
+        );
+        return;
+    }
+
     // Update the task's status in Supabase
     const { error } = await supabase
         .from("task")
-        .update({ task_status_id: newStatus })
+        .update({ task_status_id: Number(newStatus) })
         .eq("id", taskId);
     if (error) {
         console.error(error);

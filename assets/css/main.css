@@ -44,6 +44,15 @@ body {
 .c-max-h-full {
     max-height: calc(100vh - 6.5rem);
 }
+.c-h-half {
+    height: calc(50vh - 4rem);
+}
+.c-min-h-half {
+    min-height: calc(50vh - 4rem);
+}
+.c-max-h-half {
+    max-height: calc(50vh - 4rem);
+}
 
 /* Colors */
 .c-bg-region {

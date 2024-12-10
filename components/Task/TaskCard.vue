@@ -12,8 +12,8 @@
         <div class="grid grid-cols-1 xl:grid-cols-2">
             <i
                 :class="
-                    getPriorityIcon(task.priority_id) +
-                    ' !text-xl text-center xl:text-start'
+                    getPriorityIcon(task.priority_id)
+                        + ' !text-xl text-center xl:text-start'
                 "
             />
             <div class="text-center xl:text-end">
