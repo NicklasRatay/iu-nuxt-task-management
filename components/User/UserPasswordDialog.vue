@@ -1,7 +1,7 @@
 <template>
     <Dialog
         id="profile-password-dialog"
-        header="Passwort Ändern"
+        header="Change Password"
         modal
         :visible="isDialogVisible"
         class="w-96"

@@ -105,17 +105,17 @@ const toggleProfileMenu = (event: MouseEvent) => {
 };
 const profileMenuItems = computed(() => [
     {
-        label: "Namen Ändern",
+        label: "Change Name",
         icon: "pi pi-user",
         command: () => UserProfileDialogRef.value?.openDialog(),
     },
     {
-        label: "Passwort Ändern",
+        label: "Change Password",
         icon: "pi pi-key",
         command: () => UserPasswordDialogRef.value?.openDialog(),
     },
     {
-        label: "Abmelden",
+        label: "Sign Out",
         icon: "pi pi-sign-out",
         command: () => handleLogout(),
     },
